@@ -5,7 +5,7 @@ set -x
 
 
 flake8 app --exclude=app/db/migrations
-mypy app
+pyright app
 
 black --check app --diff
 isort --check-only app
