@@ -836,7 +836,7 @@ testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
 name = "prisma"
-version = "0.3.0"
+version = "0.4.2"
 description = "Prisma Client Python is an auto-generated and fully type-safe database client"
 category = "main"
 optional = false
@@ -848,11 +848,11 @@ httpx = ">=0.19.0"
 jinja2 = ">=2.11.2"
 pydantic = ">=1.8.0"
 python-dotenv = ">=0.12.0"
-typing-extensions = {version = ">=3.7", markers = "python_version < \"3.9\""}
+typing-extensions = ">=3.7"
 
 [package.extras]
-all = ["tox (==3.24.0)", "wheel (==0.37.0)", "pre-commit (==2.8.2)", "mkdocs (==1.2.3)", "mkdocs-material (==7.3.0)"]
-dev = ["tox (==3.24.0)", "wheel (==0.37.0)", "pre-commit (==2.8.2)"]
+all = ["tox (==3.24.0)", "wheel (==0.37.0)", "black (==21.11b1)", "pre-commit (==2.15.0)", "mkdocs (==1.2.3)", "mkdocs-material (==7.3.0)"]
+dev = ["tox (==3.24.0)", "wheel (==0.37.0)", "black (==21.11b1)", "pre-commit (==2.15.0)"]
 docs = ["mkdocs (==1.2.3)", "mkdocs-material (==7.3.0)"]
 
 [[package]]
@@ -1359,7 +1359,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "47d38fc56cc1718024c9a6bdd67666d663de7e72883795e7c6c8314d7ec52fbb"
+content-hash = "ef66d86bc2a6cde0a5030d523ad04d922492713cfca185fc2ad65ad72f4651ce"
 
 [metadata.files]
 aiosql = [
@@ -1855,8 +1855,8 @@ pluggy = [
     {file = "pluggy-1.0.0.tar.gz", hash = "sha256:4224373bacce55f955a878bf9cfa763c1e360858e330072059e10bad68531159"},
 ]
 prisma = [
-    {file = "prisma-0.3.0-py3-none-any.whl", hash = "sha256:2db1e55558b715512c3312dc0cdae67454e2e9b4e44342b384ab1d4e218378c9"},
-    {file = "prisma-0.3.0.tar.gz", hash = "sha256:de0a14fba886c4894ea51a885e88a8d984b20c4bc30d872befdbb0b41b5e3c16"},
+    {file = "prisma-0.4.2-py3-none-any.whl", hash = "sha256:af3f61c766999e8ce5191590df10067aa44a65a7b4cee8f4516d14a549b310cd"},
+    {file = "prisma-0.4.2.tar.gz", hash = "sha256:d815442ab34e71ee24f3764d34eb1c8ceb8333fced1fa80d35489f3e36369497"},
 ]
 psycopg2-binary = [
     {file = "psycopg2-binary-2.9.1.tar.gz", hash = "sha256:b0221ca5a9837e040ebf61f48899926b5783668b7807419e4adae8175a31f773"},
