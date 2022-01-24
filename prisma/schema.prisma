@@ -1,0 +1,101 @@
+// Prisma Schema file
+// created using `prisma db pull`
+// TODO: clean up models
+
+// TODO: partial types
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider               = "prisma-client-py"
+  interface              = "asyncio"
+  recursive_type_depth   = -1
+  partial_type_generator = "prisma/partials.py"
+}
+
+model Article {
+  id          Int        @id @default(autoincrement())
+  slug        String     @unique(map: "ix_articles_slug")
+  title       String
+  description String
+  body        String
+  author_id   Int?
+  created_at  DateTime   @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime   @default(now()) @db.Timestamptz(6)
+  users       User?      @relation(fields: [author_id], references: [id], onUpdate: NoAction)
+  // articles_to_tags articles_to_tags[]
+  // NOTE: renamed from commentaries
+  comments    Comment[]
+  favorites   Favorite[]
+
+  @@map("articles")
+}
+
+model articles_to_tags {
+  article_id Int
+  tag        String
+  // articles   Article @relation(fields: [article_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  tags       Tag    @relation(fields: [tag], references: [tag], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([article_id, tag], map: "pk_articles_to_tags")
+}
+
+model Comment {
+  id         Int      @id @default(autoincrement())
+  body       String
+  author_id  Int
+  article_id Int
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @db.Timestamptz(6)
+  articles   Article  @relation(fields: [article_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users      User     @relation(fields: [author_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("commentaries")
+}
+
+model Favorite {
+  user_id    Int
+  article_id Int
+  articles   Article @relation(fields: [article_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users      User    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([user_id, article_id], map: "pk_favorites")
+  @@map("favorites")
+}
+
+model followers_to_followings {
+  follower_id  Int
+  following_id Int
+  // users_followers_to_followings_follower_idTousers  User @relation("followers_to_followings_follower_idTousers", fields: [follower_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  // users_followers_to_followings_following_idTousers User @relation("followers_to_followings_following_idTousers", fields: [following_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([follower_id, following_id], map: "pk_followers_to_followings")
+}
+
+model Tag {
+  tag              String             @id
+  articles_to_tags articles_to_tags[]
+}
+
+model User {
+  id              Int        @id @default(autoincrement())
+  username        String     @unique(map: "ix_users_username")
+  email           String     @unique(map: "ix_users_email")
+  salt            String
+  hashed_password String?
+  bio             String     @default("")
+  image           String?
+  created_at      DateTime   @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime   @default(now()) @db.Timestamptz(6)
+  articles        Article[]
+  // NOTE: renamed from commentaries
+  comments        Comment[]
+  favorites       Favorite[]
+  // followers_to_followings_followers_to_followings_follower_idTousers  followers_to_followings[] @relation("followers_to_followings_follower_idTousers")
+  // followers_to_followings_followers_to_followings_following_idTousers followers_to_followings[] @relation("followers_to_followings_following_idTousers")
+
+  @@map("users")
+}

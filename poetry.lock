@@ -187,6 +187,14 @@ python2 = ["typed-ast (>=1.4.2)"]
 uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
+name = "cached-property"
+version = "1.5.2"
+description = "A decorator for caching properties in classes."
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "certifi"
 version = "2021.5.30"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -836,13 +844,15 @@ testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
 name = "prisma"
-version = "0.4.2"
+version = "0.5.0a0"
 description = "Prisma Client Python is an auto-generated and fully type-safe database client"
 category = "main"
 optional = false
 python-versions = ">=3"
+develop = false
 
 [package.dependencies]
+cached-property = {version = "*", markers = "python_version < \"3.8\""}
 click = ">=7.1.2"
 httpx = ">=0.19.0"
 jinja2 = ">=2.11.2"
@@ -854,6 +864,12 @@ typing-extensions = ">=3.7"
 all = ["tox (==3.24.0)", "wheel (==0.37.0)", "black (==21.11b1)", "pre-commit (==2.15.0)", "mkdocs (==1.2.3)", "mkdocs-material (==7.3.0)"]
 dev = ["tox (==3.24.0)", "wheel (==0.37.0)", "black (==21.11b1)", "pre-commit (==2.15.0)"]
 docs = ["mkdocs (==1.2.3)", "mkdocs-material (==7.3.0)"]
+
+[package.source]
+type = "git"
+url = "https://github.com/RobertCraigie/prisma-client-py"
+reference = "main"
+resolved_reference = "2bdc296433ff40105c764b422eb641dc1197773d"
 
 [[package]]
 name = "psycopg2-binary"
@@ -1359,7 +1375,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "ef66d86bc2a6cde0a5030d523ad04d922492713cfca185fc2ad65ad72f4651ce"
+content-hash = "1aacfe438b5a1b7813688fc61d88a0664a05b6015e8cee440c564fbea15a4978"
 
 [metadata.files]
 aiosql = [
@@ -1428,6 +1444,10 @@ bcrypt = [
 black = [
     {file = "black-21.9b0-py3-none-any.whl", hash = "sha256:380f1b5da05e5a1429225676655dddb96f5ae8c75bdf91e53d798871b902a115"},
     {file = "black-21.9b0.tar.gz", hash = "sha256:7de4cfc7eb6b710de325712d40125689101d21d25283eed7e9998722cf10eb91"},
+]
+cached-property = [
+    {file = "cached-property-1.5.2.tar.gz", hash = "sha256:9fa5755838eecbb2d234c3aa390bd80fbd3ac6b6869109bfc1b499f7bd89a130"},
+    {file = "cached_property-1.5.2-py2.py3-none-any.whl", hash = "sha256:df4f613cf7ad9a588cc381aaf4a512d26265ecebd5eb9e1ba12f1319eb85a6a0"},
 ]
 certifi = [
     {file = "certifi-2021.5.30-py2.py3-none-any.whl", hash = "sha256:50b1e4f8446b06f41be7dd6338db18e0990601dce795c2b1686458aa7e8fa7d8"},
@@ -1854,10 +1874,7 @@ pluggy = [
     {file = "pluggy-1.0.0-py2.py3-none-any.whl", hash = "sha256:74134bbf457f031a36d68416e1509f34bd5ccc019f0bcc952c7b909d06b37bd3"},
     {file = "pluggy-1.0.0.tar.gz", hash = "sha256:4224373bacce55f955a878bf9cfa763c1e360858e330072059e10bad68531159"},
 ]
-prisma = [
-    {file = "prisma-0.4.2-py3-none-any.whl", hash = "sha256:af3f61c766999e8ce5191590df10067aa44a65a7b4cee8f4516d14a549b310cd"},
-    {file = "prisma-0.4.2.tar.gz", hash = "sha256:d815442ab34e71ee24f3764d34eb1c8ceb8333fced1fa80d35489f3e36369497"},
-]
+prisma = []
 psycopg2-binary = [
     {file = "psycopg2-binary-2.9.1.tar.gz", hash = "sha256:b0221ca5a9837e040ebf61f48899926b5783668b7807419e4adae8175a31f773"},
     {file = "psycopg2_binary-2.9.1-cp310-cp310-macosx_10_14_x86_64.macosx_10_9_intel.macosx_10_9_x86_64.macosx_10_10_intel.macosx_10_10_x86_64.whl", hash = "sha256:24b0b6688b9f31a911f2361fe818492650795c9e5d3a1bc647acbd7440142a4f"},

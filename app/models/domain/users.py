@@ -1,8 +1,13 @@
-from typing import Optional
+from typing import Tuple, Optional
+from prisma.models import User as BaseUser
 
-from app.models.common import DateTimeModelMixin, IDModelMixin
+from app.models.common import IDModelMixin
 from app.models.domain.rwmodel import RWModel
 from app.services import security
+
+
+# TODO: this is technically incorrect, we should be inheriting
+# from a partial user that has not relational fields
 
 
 class User(RWModel):
@@ -12,13 +17,14 @@ class User(RWModel):
     image: Optional[str] = None
 
 
-class UserInDB(IDModelMixin, DateTimeModelMixin, User):
-    salt: str = ""
-    hashed_password: str = ""
-
+class UserInDB(IDModelMixin, User, BaseUser):
     def check_password(self, password: str) -> bool:
-        return security.verify_password(self.salt + password, self.hashed_password)
+        hashed = self.hashed_password
+        assert hashed is not None
+        return security.verify_password(self.salt + password, hashed)
 
-    def change_password(self, password: str) -> None:
-        self.salt = security.generate_salt()
-        self.hashed_password = security.get_password_hash(self.salt + password)
+    @staticmethod
+    def generate_password_hash(password: str) -> Tuple[str, str]:
+        salt = security.generate_salt()
+        hashed_password = security.get_password_hash(salt + password)
+        return (salt, hashed_password)

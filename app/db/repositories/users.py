@@ -1,5 +1,7 @@
 from typing import Optional
 
+from prisma.types import UserUpdateInput
+
 from app.db.errors import EntityDoesNotExist
 from app.db.queries.queries import queries
 from app.db.repositories.base import BaseRepository
@@ -8,19 +10,24 @@ from app.models.domain.users import User, UserInDB
 
 class UsersRepository(BaseRepository):
     async def get_user_by_email(self, *, email: str) -> UserInDB:
-        user_row = await queries.get_user_by_email(self.connection, email=email)
-        if user_row:
-            return UserInDB(**user_row)
+        user = await UserInDB.prisma().find_unique(
+            where={
+                "email": email,
+            },
+        )
+        if user is not None:
+            return user
 
         raise EntityDoesNotExist("user with email {0} does not exist".format(email))
 
     async def get_user_by_username(self, *, username: str) -> UserInDB:
-        user_row = await queries.get_user_by_username(
-            self.connection,
-            username=username,
+        user = await UserInDB.prisma().find_unique(
+            where={
+                "username": username,
+            },
         )
-        if user_row:
-            return UserInDB(**user_row)
+        if user is not None:
+            return user
 
         raise EntityDoesNotExist(
             "user with username {0} does not exist".format(username),
@@ -33,19 +40,15 @@ class UsersRepository(BaseRepository):
         email: str,
         password: str,
     ) -> UserInDB:
-        user = UserInDB(username=username, email=email)
-        user.change_password(password)
-
-        async with self.connection.transaction():
-            user_row = await queries.create_new_user(
-                self.connection,
-                username=user.username,
-                email=user.email,
-                salt=user.salt,
-                hashed_password=user.hashed_password,
-            )
-
-        return user.copy(update=dict(user_row))
+        salt, hashed_password = UserInDB.generate_password_hash(password)
+        return await UserInDB.prisma().create(
+            data={
+                "username": username,
+                "email": email,
+                "salt": salt,
+                "hashed_password": hashed_password,
+            }
+        )
 
     async def update_user(  # noqa: WPS211
         self,
@@ -57,25 +60,31 @@ class UsersRepository(BaseRepository):
         bio: Optional[str] = None,
         image: Optional[str] = None,
     ) -> UserInDB:
-        user_in_db = await self.get_user_by_username(username=user.username)
+        data: UserUpdateInput = {}
+        if username is not None:
+            data["username"] = username
 
-        user_in_db.username = username or user_in_db.username
-        user_in_db.email = email or user_in_db.email
-        user_in_db.bio = bio or user_in_db.bio
-        user_in_db.image = image or user_in_db.image
-        if password:
-            user_in_db.change_password(password)
+        if email is not None:
+            data["email"] = email
 
-        async with self.connection.transaction():
-            user_in_db.updated_at = await queries.update_user_by_username(
-                self.connection,
-                username=user.username,
-                new_username=user_in_db.username,
-                new_email=user_in_db.email,
-                new_salt=user_in_db.salt,
-                new_password=user_in_db.hashed_password,
-                new_bio=user_in_db.bio,
-                new_image=user_in_db.image,
-            )
+        if bio is not None:
+            data["bio"] = bio
 
-        return user_in_db
+        if image is not None:
+            data["image"] = image
+
+        if password is not None:
+            salt, hashed_password = UserInDB.generate_password_hash(password)
+            data["salt"] = salt
+            data["hashed_password"] = hashed_password
+
+        user_record = await UserInDB.prisma().update(
+            where={
+                "username": user.username,
+            },
+            data=data,
+        )
+        assert (
+            user_record is not None
+        ), f"Could not find a user with the username: {username}"
+        return user_record

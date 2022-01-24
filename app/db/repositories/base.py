@@ -1,10 +1,16 @@
+from typing import Optional
 from asyncpg.connection import Connection
 
 
 class BaseRepository:
-    def __init__(self, conn: Connection) -> None:
+    def __init__(self, conn: Optional[Connection] = None) -> None:
         self._conn = conn
 
     @property
     def connection(self) -> Connection:
-        return self._conn
+        # pragma: prisma refactor
+        conn = self._conn
+        assert (
+            conn is not None
+        ), "Attemped to retrieve connection from a connection-less repository"
+        return conn
